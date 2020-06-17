@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"net"
 	"net/http"
 	"reflect"
 
@@ -10,9 +9,9 @@ import (
 )
 
 func main() {
-	var d *net.Dialer
-	monkey.PatchInstanceMethod(reflect.TypeOf(d), "Dial", func(_ *net.Dialer, _, _ string) (net.Conn, error) {
-		return nil, fmt.Errorf("no dialing allowed")
+	var d *http.Client
+	monkey.PatchInstanceMethod(reflect.TypeOf(d), "Get", func(_ *http.Client, url string) (*http.Response, error) {
+		return nil, fmt.Errorf("%s no dialing allowed", url)
 	})
 	_, err := http.Get("http://google.com")
 	fmt.Println(err) // Get http://google.com: no dialing allowed
